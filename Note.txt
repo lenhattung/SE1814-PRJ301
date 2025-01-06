@@ -14,6 +14,6 @@ Source-code: https://github.com/lenhattung/SE1814-PRJ301
 Support: https://www.ultraviewer.net/vi/download.html
 ----
 Tools:
-- JDK: 1.8
+- JDK 8 : https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html
 - Netbeans: 8.2
 - Tomcat: 8.5
