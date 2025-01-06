@@ -1,7 +1,12 @@
 ----
-Link Zoom:
+Link Zoom (Theo dõi trực tiếp khóa học):
 https://uw-edu-pl.zoom.us/j/94463230288
 
 ----
-LMS:
+LMS (làm bài Quizz/Workshop/Assignment):
 - Course ID: PRJ301LNT / PRJ301LNT@2024
+
+----
+Edunext (Shcedule / Disscussion)
+----
+Source-code: https://github.com/lenhattung/SE1814-PRJ301
