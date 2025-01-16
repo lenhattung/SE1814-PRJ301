@@ -23,25 +23,40 @@ public class MainController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            String txtA = request.getParameter("txtA");
-            String txtB = request.getParameter("txtB");
-
-            if (txtA == null || txtA.trim().length() == 0) {
-                out.println("Please input A");
-                return;
-            }
-
-            if (txtB == null || txtB.trim().length() == 0) {
-                out.println("Please input A");
-                return;
-            }
-
-            int a = Integer.parseInt(txtA);
-        } catch (Exception e) {
-            e.printStackTrace();
+        PrintWriter out = response.getWriter();
+        String txtA = request.getParameter("txtA");
+        String txtB = request.getParameter("txtB");
+        // Check input
+        if (txtA == null || txtA.trim().length() == 0) {
+            out.println("Please input A");
+            return;
         }
 
+        if (txtB == null || txtB.trim().length() == 0) {
+            out.println("Please input B");
+            return;
+        }
+        // Check value
+        int a = 0;
+        int b = 0;
+        try {
+            a = Integer.parseInt(txtA);
+            b = Integer.parseInt(txtB);
+            
+            // Check a and b >0
+            if(a<=0){
+                out.println("A must be greater than 0!");
+                return;
+            }
+            
+            if(b<=0){
+                out.println("B must be greater than 0!");
+                return;
+            }
+        }catch(Exception e){
+            out.println("A and B must be intergers!");
+            return;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
