@@ -19,7 +19,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "MainController", urlPatterns = {"/MainController"})
 public class MainController extends HttpServlet {
-
+    public int GCD(int a, int b){
+        int min = Math.min(a, b);
+        for(int i=min; i>=1; i--){
+            if(a%i==0 && b%i==0){
+                return i;
+            }
+        }
+        return 1;
+    }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -57,6 +65,10 @@ public class MainController extends HttpServlet {
             out.println("A and B must be intergers!");
             return;
         }
+        
+        // output result
+        int result = GCD(a, b);
+        out.println("Greatest Common Divisor("+a+","+b+")="+result);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
