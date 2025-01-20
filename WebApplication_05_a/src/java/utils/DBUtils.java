@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +32,17 @@ public class DBUtils implements Serializable{
     
     public static void main(String[] args) {
         try {
-            System.out.println(getConnection());
+            Connection c =  getConnection();
+            
+            String sql = "INSERT INTO products (product_id, product_name, price, category, stock_quantity)"
+                    + "  VALUES (12, N'Máy ảnh Sony A7 III', 45990000, N'Máy ảnh', 15)";
+            
+            Statement st = c.createStatement();
+            
+            int result = st.executeUpdate(sql);
+            
+            System.out.println(result);
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBUtils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
