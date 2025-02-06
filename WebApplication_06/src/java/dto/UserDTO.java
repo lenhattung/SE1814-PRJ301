@@ -17,6 +17,7 @@ package dto;
  * @author tungi
  */
 public class UserDTO {
+
     private String userID;
     private String fullName;
     private String roleId;
@@ -63,5 +64,10 @@ public class UserDTO {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
+    @Override
+    public String toString() {
+        return "UserDTO{" + "userID=" + userID + ", fullName=" + fullName + ", roleId=" + roleId + ", password=" + password + '}';
+    }
+
 }
