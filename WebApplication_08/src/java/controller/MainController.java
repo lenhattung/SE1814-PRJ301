@@ -5,8 +5,11 @@
  */
 package controller;
 
+import dao.UserDAO;
+import dto.UserDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,26 +25,51 @@ public class MainController extends HttpServlet {
 
     private static final String LOGIN_PAGE = "login.jsp";
 
+    public UserDTO getUser(String strUserID) {
+        UserDAO udao = new UserDAO();
+        UserDTO user = udao.readbyID(strUserID);
+        return user;
+    }
+
+    public boolean isValidLogin(String strUserID, String strPassword) {
+        UserDTO user = getUser(strUserID);
+//        System.out.println(user);
+//        System.out.println(user.getPassword());
+//        System.out.println(strPassword);
+        if (user != null && user.getPassword().equals(strPassword)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = LOGIN_PAGE;
         try {
             String action = request.getParameter("action");
-            if(action==null){
+            if (action == null) {
                 url = LOGIN_PAGE;
             }
             // Your code here
-            if(action!=null && action.equals("login")){
+            if (action != null && action.equals("login")) {
                 // Login action
                 String strUserID = request.getParameter("strUserID");
-                String strPassword = request.getParameter("password");
-                
+                String strPassword = request.getParameter("strPassword");
+                if (isValidLogin(strUserID, strPassword)) {
+                    url = "user.jsp";
+                    UserDTO user = getUser(strUserID);
+                    request.setAttribute("user", user);
+                } else {
+                    url = "invalid.jsp";
+                }
             }
         } catch (Exception e) {
-            
+            log("Error at MainController: " + e.toString());
         } finally {
-            
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 
