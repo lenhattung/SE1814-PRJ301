@@ -49,6 +49,7 @@ public class MainController extends HttpServlet {
         String url = LOGIN_PAGE;
         try {
             String action = request.getParameter("action");
+            System.out.println(action);
             if (action == null) {
                 url = LOGIN_PAGE;
             }
@@ -58,18 +59,27 @@ public class MainController extends HttpServlet {
                 String strUserID = request.getParameter("strUserID");
                 String strPassword = request.getParameter("strPassword");
                 if (isValidLogin(strUserID, strPassword)) {
-                    url = "user.jsp";
+                    url = "search.jsp";
                     UserDTO user = getUser(strUserID);
                     request.setAttribute("user", user);
                 } else {
                     url = "invalid.jsp";
                 }
+            } else if (action != null && action.equals("logout")) {
+                url = "MainController";
+                PrintWriter out = response.getWriter();
+                request.setAttribute("user", null);
+                System.out.println("You are logged out!");
+                out.println("<b>You are logged out!</b><br/>");
+                out.println("<a href='MainController'>Back to login page!</b>");
             }
         } catch (Exception e) {
             log("Error at MainController: " + e.toString());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+            if (!url.equals("MainController")) {
+                rd.forward(request, response);
+            }
         }
     }
 

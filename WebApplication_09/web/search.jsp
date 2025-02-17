@@ -17,5 +17,7 @@
             UserDTO user = (UserDTO)request.getAttribute("user");
         %>
         <h1>Welcome <%=user.getFullName()%> </h1>
+        <hr/>
+        <a href="MainController?action=logout">Log out</a>
     </body>
 </html>
