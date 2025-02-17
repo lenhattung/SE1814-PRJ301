@@ -73,6 +73,9 @@
 </style>
 
 <header class="header">
+    <%
+        int x = 100;
+    %>
     <div class="container">
         <nav class="nav">
             <a href="#" class="logo">SHOP ONLINE</a>
