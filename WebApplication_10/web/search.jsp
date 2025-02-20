@@ -16,7 +16,7 @@
         <%@include file="header.jsp" %>
         <div style="min-height: 800px">
             <%
-                UserDTO user = (UserDTO) request.getAttribute("user");
+                UserDTO user = (UserDTO) session.getAttribute("user");
             %>
             <h1>Welcome <%=user.getFullName()%> </h1>
             <form action="MainController" method="get">

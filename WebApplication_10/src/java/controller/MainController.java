@@ -61,18 +61,14 @@ public class MainController extends HttpServlet {
                 if (isValidLogin(strUserID, strPassword)) {
                     url = "search.jsp";
                     UserDTO user = getUser(strUserID);
-                    request.setAttribute("user", user);
+                    request.getSession().setAttribute("user", user);
                 } else {
                     request.setAttribute("message", "Incorrect UserID or Password");
                     url = "login.jsp";
                 }
             } else if (action != null && action.equals("logout")) {
-                url = "MainController";
-                PrintWriter out = response.getWriter();
-                request.setAttribute("user", null);
-                System.out.println("You are logged out!");
-                out.println("<b>You are logged out!</b><br/>");
-                out.println("<a href='MainController'>Back to login page!</b>");
+                url = "login.jsp";
+                request.getSession().invalidate(); // Hủy phiên làm việc
             }
         } catch (Exception e) {
             log("Error at MainController: " + e.toString());
