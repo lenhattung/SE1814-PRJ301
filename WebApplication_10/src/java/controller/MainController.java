@@ -5,10 +5,14 @@
  */
 package controller;
 
+import dao.BookDAO;
 import dao.UserDAO;
+import dto.BookDTO;
 import dto.UserDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -69,6 +73,12 @@ public class MainController extends HttpServlet {
             } else if (action != null && action.equals("logout")) {
                 url = "login.jsp";
                 request.getSession().invalidate(); // Hủy phiên làm việc
+            } else if (action != null && action.equals("search")) {
+                url = "search.jsp";
+                BookDAO bdao = new BookDAO();
+                String searchTerm = request.getParameter("searchTerm");
+                List<BookDTO> books = bdao.searchByTitle(searchTerm);
+                request.setAttribute("books", books);
             }
         } catch (Exception e) {
             log("Error at MainController: " + e.toString());
