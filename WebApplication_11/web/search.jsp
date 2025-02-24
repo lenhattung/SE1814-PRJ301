@@ -60,8 +60,8 @@
                     <td><%=bdto.getPublishYear()%></td>
                     <td><%=bdto.getPrice()%></td>
                     <td><%=bdto.getQuantity()%></td>
-                    <td><img src="assets/images/delete-icon.png" 
-                             style="height: 25px"></img></td>
+                    <td><a href="MainController?action=delete&id=<%=bdto.getBookID()%>"><img src="assets/images/delete-icon.png" 
+                                style="height: 25px"/></a></td>
                 </tr>
                 <%
                     }
