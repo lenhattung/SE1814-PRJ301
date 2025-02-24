@@ -99,4 +99,18 @@ public class BookDAO implements IDAO<BookDTO, String>{
         }
         return result;
     }
+
+    public boolean updateQuantityToZero(String str_bookid) {
+       String sql = "UPDATE tblBooks SET Quantity=0 WHERE BookID=?";
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, str_bookid);
+            int i = ps.executeUpdate();
+            return i>0;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return false;
+    }
 }
