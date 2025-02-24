@@ -25,10 +25,10 @@
                 <input type="hidden" name="action" value="logout"/>
                 <input type="submit" value="Logout"/>
             </form>
-            
+
             <%
-                String searchTerm = request.getAttribute("searchTerm")+"";
-                searchTerm = searchTerm.equals("null")?"":searchTerm;
+                String searchTerm = request.getAttribute("searchTerm") + "";
+                searchTerm = searchTerm.equals("null") ? "" : searchTerm;
             %>
             <form action="MainController" method="get">
                 <input type="hidden" name="action" value="search"/>
@@ -48,6 +48,7 @@
                     <td>PublishYear</td>
                     <td>Price</td>
                     <td>Quantity</td>
+                    <td>Action</td>
                 </tr>
                 <%
                     for (BookDTO bdto : listBooks) {
@@ -59,6 +60,8 @@
                     <td><%=bdto.getPublishYear()%></td>
                     <td><%=bdto.getPrice()%></td>
                     <td><%=bdto.getQuantity()%></td>
+                    <td><img src="assets/images/delete-icon.png" 
+                             style="height: 25px"></img></td>
                 </tr>
                 <%
                     }

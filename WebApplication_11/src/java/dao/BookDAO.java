@@ -74,4 +74,29 @@ public class BookDAO implements IDAO<BookDTO, String>{
         }
         return result;
     }
+    public List<BookDTO> searchByTitle2(String searchTerm) {
+        List<BookDTO> result = new ArrayList<>();
+        String sql = "SELECT * FROM tblBooks WHERE title LIKE ? AND quantity>0";
+        
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%"+searchTerm+"%");
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                BookDTO b = new BookDTO(
+                        rs.getString("BookID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getInt("PublishYear"),
+                        rs.getDouble("Price"),
+                        rs.getInt("Quantity")
+                );
+                result.add(b);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return result;
+    }
 }
