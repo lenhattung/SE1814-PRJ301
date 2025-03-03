@@ -185,25 +185,25 @@
                 .book-table tbody td {
                     padding: 8px 10px;
                 }
-                
+
                 .welcome-section {
                     flex-direction: column;
                     text-align: center;
                 }
-                
+
                 .welcome-section form {
                     margin-top: 15px;
                 }
-                
+
                 .search-section form {
                     flex-direction: column;
                     align-items: stretch;
                 }
-                
+
                 .search-section label {
                     margin-bottom: 5px;
                 }
-                
+
                 .search-input {
                     margin-right: 0;
                     margin-bottom: 10px;
@@ -214,17 +214,10 @@
     <body> 
         <%@include file="header.jsp" %>
         <div class="container" style="min-height: 500px;">
-            <%                
+            <%
                 if (session.getAttribute("user") != null) {
                     UserDTO user = (UserDTO) session.getAttribute("user");
             %>
-            <div class="welcome-section">
-                <h1>Welcome, <%=user.getFullName()%>!</h1>
-                <form action="MainController">
-                    <input type="hidden" name="action" value="logout"/>
-                    <input type="submit" value="Logout" class="logout-btn"/>
-                </form>
-            </div>
 
             <%
                 String searchTerm = request.getAttribute("searchTerm") + "";
@@ -238,10 +231,11 @@
                     <input type="submit" value="Search" class="search-btn"/>
                 </form>
             </div>
-
+            <% if (user.getRoleId().equals("AD")) { %>            
             <a href="bookForm.jsp" class="add-btn">
                 Add New Book    
             </a>    
+            <%}%>
             <%
                 if (request.getAttribute("books") != null) {
                     List<BookDTO> books = (List<BookDTO>) request.getAttribute("books");
@@ -256,12 +250,13 @@
                         <th>PublishYear</th>
                         <th>Price</th>
                         <th>Quantity</th>
+                            <% if (user.getRoleId().equals("AD")) { %>      
                         <th>Action</th>
+                            <%}%>
                     </tr>
                 </thead>
                 <tbody>
-                    <%            
-                        for (BookDTO b : books) {
+                    <%                        for (BookDTO b : books) {
                     %>
                     <tr>
                         <td><%=b.getBookID()%></td>
@@ -270,25 +265,27 @@
                         <td><%=b.getPublishYear()%></td>
                         <td><%=b.getPrice()%></td>
                         <td><%=b.getQuantity()%></td>
+                        <% if (user.getRoleId().equals("AD")) {%>  
                         <td><a href="MainController?action=delete&id=<%=b.getBookID()%>&searchTerm=<%=searchTerm%>">
                                 <img src="assets/images/delete-icon.png" style="height: 25px"/>
                             </a></td>
+                            <%}%>
                     </tr>
                     <%
                         }
                     %>
                 </tbody>
             </table>
-            <%    
+            <%
                 }
-            } else { 
+            } else {
             %>
             <div class="welcome-section">
                 <h1>Access Denied</h1>
                 <p>You do not have permission to access this content.</p>
             </div>
             <%
-            }
+                }
             %>
         </div>
         <jsp:include page="footer.jsp"/>
