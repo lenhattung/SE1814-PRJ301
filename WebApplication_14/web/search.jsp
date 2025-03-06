@@ -10,6 +10,7 @@
 <%@page import="java.util.List"%>
 <%@page import="dto.UserDTO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -215,79 +216,64 @@
     <body> 
         <%@include file="header.jsp" %>
         <div class="container" style="min-height: 500px;">
-            <%
-                if (session.getAttribute("user") != null) {
-                    UserDTO user = (UserDTO) session.getAttribute("user");
-            %>
+            <c:if test="${not empty sessionScope.user}">
+                <c:set var="searchTerm" value="${requestScope.searchTerm==null?'':requestScope.searchTerm}"/>
+                <div class="search-section">
+                    <form action="MainController">
+                        <input type="hidden" name="action" value="search"/>
+                        <label for="searchInput">Search Books:</label>
+                        <input type="text" id="searchInput" name="searchTerm" value="${searchTerm}" class="search-input" placeholder="Enter book title, author or ID..."/>
+                        <input type="submit" value="Search" class="search-btn"/>
+                    </form>
+                </div>
+                <c:if test="${sessionScope.user.roleId eq 'AD'}">            
+                    <a href="bookForm.jsp" class="add-btn">
+                        Add New Book    
+                    </a>    
+                </c:if>
 
-            <%
-                String searchTerm = request.getAttribute("searchTerm") + "";
-                searchTerm = searchTerm.equals("null") ? "" : searchTerm;
-            %>
-            <div class="search-section">
-                <form action="MainController">
-                    <input type="hidden" name="action" value="search"/>
-                    <label for="searchInput">Search Books:</label>
-                    <input type="text" id="searchInput" name="searchTerm" value="<%=searchTerm%>" class="search-input" placeholder="Enter book title, author or ID..."/>
-                    <input type="submit" value="Search" class="search-btn"/>
-                </form>
-            </div>
-            <% if (user.getRoleId().equals("AD")) { %>            
-            <a href="bookForm.jsp" class="add-btn">
-                Add New Book    
-            </a>    
-            <%}%>
-            <%
-                if (request.getAttribute("books") != null) {
-                    List<BookDTO> books = (List<BookDTO>) request.getAttribute("books");
+                <c:if test="${not empty requestScope.books}">
+                    <table class="book-table">
+                        <thead>
+                            <tr>
+                                <th>BookID</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>PublishYear</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                    <% if (AuthUtils.isAdmin(session)) { %>      
+                                <th>Action</th>
+                                    <%}%>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="b" items="${requestScope.books}">
+                                <tr>
+                                    <td>${b.bookID}</td>
+                                    <td>${b.title}</td>
+                                    <td>${b.author}</td>
+                                    <td>${b.publishYear}</td>
+                                    <td>${b.price}</td>
+                                    <td>${b.quantity}</td>
+                                    <% if (AuthUtils.isAdmin(session)) {%>  
+                                    <td><a href="MainController?action=delete&id=${b.bookID}&searchTerm=${searchTerm}">
+                                            <img src="assets/images/delete-icon.png" style="height: 25px"/>
+                                        </a></td>
+                                        <%}%>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+            </c:if>
+            <c:if test="${empty sessionScope.user}">
+                <div class="welcome-section">
+                    <h1>Access Denied</h1>
+                    <p>You do not have permission to access this content.</p>
+                </div>
+            </c:if>
 
-            %>
-            <table class="book-table">
-                <thead>
-                    <tr>
-                        <th>BookID</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>PublishYear</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <% if (AuthUtils.isAdmin(session)) { %>      
-                        <th>Action</th>
-                            <%}%>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%                        for (BookDTO b : books) {
-                    %>
-                    <tr>
-                        <td><%=b.getBookID()%></td>
-                        <td><%=b.getTitle()%></td>
-                        <td><%=b.getAuthor()%></td>
-                        <td><%=b.getPublishYear()%></td>
-                        <td><%=b.getPrice()%></td>
-                        <td><%=b.getQuantity()%></td>
-                        <% if (AuthUtils.isAdmin(session)) {%>  
-                        <td><a href="MainController?action=delete&id=<%=b.getBookID()%>&searchTerm=<%=searchTerm%>">
-                                <img src="assets/images/delete-icon.png" style="height: 25px"/>
-                            </a></td>
-                            <%}%>
-                    </tr>
-                    <%
-                        }
-                    %>
-                </tbody>
-            </table>
-            <%
-                }
-            } else {
-            %>
-            <div class="welcome-section">
-                <h1>Access Denied</h1>
-                <p>You do not have permission to access this content.</p>
-            </div>
-            <%
-                }
-            %>
         </div>
         <jsp:include page="footer.jsp"/>
     </body>
