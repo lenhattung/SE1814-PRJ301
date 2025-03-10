@@ -22,8 +22,8 @@ public class BookDAO implements IDAO<BookDTO, String> {
     @Override
     public boolean create(BookDTO entity) {
         String sql = "INSERT INTO tblBooks"
-                + " (BookID,Title,Author,PublishYear,Price,Quantity) "
-                + "  VALUES(?, ?, ?, ? ,? , ?, ?)";
+                + " (BookID,Title,Author,PublishYear,Price,Quantity,Image) "
+                + "  VALUES(?, ?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = DBUtils.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -44,19 +44,62 @@ public class BookDAO implements IDAO<BookDTO, String> {
 
     @Override
     public List<BookDTO> readAll() {
-        return null;
+        List<BookDTO> result = new ArrayList<>();
+        String sql = "SELECT * FROM tblBooks";
+
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                BookDTO b = new BookDTO(
+                        rs.getString("BookID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getInt("PublishYear"),
+                        rs.getDouble("Price"),
+                        rs.getInt("Quantity"),
+                        rs.getString("Image")
+                );
+                result.add(b);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return result;
     }
 
     @Override
     public BookDTO readbyID(String id) {
+        String sql = "SELECT * FROM tblBooks WHERE BookID = ?";
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                BookDTO b = new BookDTO(
+                        rs.getString("BookID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getInt("PublishYear"),
+                        rs.getDouble("Price"),
+                        rs.getInt("Quantity"),
+                        rs.getString("Image")
+                );
+                return b;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         return null;
     }
 
     @Override
     public boolean update(BookDTO entity) {
-        String sql = "INSERT INTO tblBooks"
-                + " (BookID,Title,Author,PublishYear,Price,Quantity) "
-                + "  VALUES(?, ?, ?, ? ,? , ?, ?)";
+        String sql = "UPDATE tblBooks SET "
+                + " Title=?, Author=?, PublishYear=?, Price=?, Quantity=?, Image=? "
+                + "  WHERE BookID=?";
         try {
             Connection conn = DBUtils.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -77,12 +120,48 @@ public class BookDAO implements IDAO<BookDTO, String> {
 
     @Override
     public boolean delete(String id) {
+        String sql = "DELETE FROM tblBooks WHERE BookID = ?";
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, id);
+            int i = ps.executeUpdate();
+            return i > 0;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         return false;
     }
 
     @Override
     public List<BookDTO> search(String searchTerm) {
-        return null;
+        List<BookDTO> result = new ArrayList<>();
+        String sql = "SELECT * FROM tblBooks WHERE Title LIKE ? OR Author LIKE ? OR BookID LIKE ?";
+
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String param = "%" + searchTerm + "%";
+            ps.setString(1, param);
+            ps.setString(2, param);
+            ps.setString(3, param);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                BookDTO b = new BookDTO(
+                        rs.getString("BookID"),
+                        rs.getString("Title"),
+                        rs.getString("Author"),
+                        rs.getInt("PublishYear"),
+                        rs.getDouble("Price"),
+                        rs.getInt("Quantity"),
+                        rs.getString("Image")
+                );
+                result.add(b);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return result;
     }
 
     public List<BookDTO> searchByTitle(String searchTerm) {
@@ -102,7 +181,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
                         rs.getInt("PublishYear"),
                         rs.getDouble("Price"),
                         rs.getInt("Quantity"),
-                        rs.getString("image")
+                        rs.getString("Image")
                 );
                 result.add(b);
             }
@@ -129,7 +208,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
                         rs.getInt("PublishYear"),
                         rs.getDouble("Price"),
                         rs.getInt("Quantity"),
-                        rs.getString("image")
+                        rs.getString("Image")
                 );
                 result.add(b);
             }
@@ -151,6 +230,38 @@ public class BookDAO implements IDAO<BookDTO, String> {
             System.out.println(e.toString());
         }
         return false;
+    }
+    
+    public boolean checkBookIDExist(String bookID) {
+        String sql = "SELECT COUNT(*) FROM tblBooks WHERE BookID = ?";
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, bookID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return false;
+    }
+    
+    public BookDTO getBookByID(String bookID) {
+        return readbyID(bookID);
+    }
+    
+    public boolean addBook(BookDTO book) {
+        return create(book);
+    }
+    
+    public boolean updateBook(BookDTO book) {
+        return update(book);
+    }
+    
+    public boolean deleteBook(String bookID) {
+        return delete(bookID);
     }
 }
 /*

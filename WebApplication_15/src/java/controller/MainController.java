@@ -79,7 +79,6 @@ public class MainController extends HttpServlet {
             url = "search.jsp";
             String str_bookid = request.getParameter("id");
             bookDAO.updateQuantityToZero(str_bookid);
-            // search
             processSearch(request, response);
         } else {
             response.getWriter().print("<h1>303 Error, ... </h1>");

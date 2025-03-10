@@ -165,12 +165,12 @@
                     margin: 5px 0;
                 }
             }
-            
+
             .image-preview {
                 margin-top: 10px;
                 max-width: 100%;
             }
-            
+
             .image-preview img {
                 max-width: 100%;
                 max-height: 200px;
@@ -178,20 +178,49 @@
                 border-radius: 4px;
                 padding: 5px;
             }
+
+            .success-message {
+                background-color: #d4edda;
+                color: #155724;
+                padding: 10px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                border-left: 4px solid #28a745;
+            }
         </style>
     </head>
     <body>
         <jsp:include page="header.jsp"/>
 
         <div class="page-content">
-            <% if (AuthUtils.isAdmin(session)) { 
-                BookDTO book = new BookDTO();
-                if(request.getAttribute("book")!=null){
-                    book = (BookDTO)request.getAttribute("book");
-                }
-            %>
+            <% if (AuthUtils.isAdmin(session)) { %>
+
             <div class="form-container">
                 <h1>Book Information</h1>
+
+                <!-- Hiển thị thông báo thành công nếu có -->
+                <c:if test="${not empty requestScope.success}">
+                    <div class="success-message">${requestScope.success}</div>
+                </c:if>
+
+                <!-- Hiển thị thông báo lỗi nếu có -->
+                <c:if test="${not empty requestScope.error}">
+                    <div class="error-container">
+                        <p>${requestScope.error}</p>
+                    </div>
+                </c:if>
+
+                <%
+                    // Nếu không có bean trong request, tạo bean mới trước khi sử dụng jsp:useBean
+                    BookDTO book = new BookDTO();
+                    if (request.getAttribute("book") == null) {
+                        request.setAttribute("book", new BookDTO());
+                        book = new BookDTO();
+                    } else {
+                        book = (BookDTO) request.getAttribute("book");
+                    }
+                %>
+
                 <form action="MainController" method="post">
                     <input type="hidden" name="action" value="${empty book.bookID ? 'add' : 'update'}"/>
 
@@ -242,7 +271,7 @@
                             <div class="error-message">${requestScope.txtQuantity_error}</div>
                         </c:if>
                     </div>
-                        
+
                     <div class="form-group">
                         <label for="txtImage">Image:</label>
                         <input type="text" id="txtImage" name="txtImage" value="${book.image}" placeholder="Enter image URL or base64 data"/>
@@ -255,20 +284,13 @@
                             </div>
                         </c:if>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="txtDescription">Description:</label>
-                        <textarea id="txtDescription" name="txtDescription" rows="4">${book.description}</textarea>
-                        <c:if test="${not empty requestScope.txtDescription_error}">
-                            <div class="error-message">${requestScope.txtDescription_error}</div>
-                        </c:if>
-                    </div>
 
                     <div class="button-group">
                         <input type="submit" value="Save" />
                         <input type="reset" value="Reset"/>
                     </div>
                 </form>
+
                 <a href="MainController?action=search" class="back-link">Back to Book List</a>
             </div>
             <% } else { %>
@@ -277,33 +299,36 @@
                 <p>You do not have permission to access this content!</p>
                 <a href="MainController?action=search" class="back-link">Back to Book List</a>
             </div>
-            <% } %>
+            <% }%>
         </div>
 
         <jsp:include page="footer.jsp"/>
-        
+
         <script>
-            // Preview image when URL is entered
-            document.getElementById('txtImage').addEventListener('input', function() {
-                const imageUrl = this.value.trim();
-                const previewContainer = document.querySelector('.image-preview') || 
-                                       document.createElement('div');
-                
-                if (!document.querySelector('.image-preview')) {
-                    previewContainer.className = 'image-preview';
-                    this.parentNode.appendChild(previewContainer);
-                }
-                
-                if (imageUrl) {
-                    // Check if it's a URL or base64 data
-                    if (imageUrl.startsWith('data:image') || imageUrl.startsWith('http')) {
-                        previewContainer.innerHTML = `<img src="${imageUrl}" alt="Preview" onerror="this.src='/images/placeholder.png'; this.alt='Image not available';">`;
-                    } else {
-                        previewContainer.innerHTML = '<p>Enter a valid image URL or base64 data</p>';
+            // JavaScript để cải thiện trải nghiệm người dùng
+            document.addEventListener('DOMContentLoaded', function () {
+                // Preview image when URL is entered
+                document.getElementById('txtImage').addEventListener('input', function () {
+                    const imageUrl = this.value.trim();
+                    let previewContainer = document.querySelector('.image-preview');
+
+                    if (!previewContainer) {
+                        previewContainer = document.createElement('div');
+                        previewContainer.className = 'image-preview';
+                        this.parentNode.appendChild(previewContainer);
                     }
-                } else {
-                    previewContainer.innerHTML = '';
-                }
+
+                    if (imageUrl) {
+                        // Check if it's a URL or base64 data
+                        if (imageUrl.startsWith('data:image') || imageUrl.startsWith('http')) {
+                            previewContainer.innerHTML = `<img src="${imageUrl}" alt="Preview" onerror="this.src='assets/images/placeholder.png'; this.alt='Image not available';">`;
+                        } else {
+                            previewContainer.innerHTML = '<p>Enter a valid image URL or base64 data</p>';
+                        }
+                    } else {
+                        previewContainer.innerHTML = '';
+                    }
+                });
             });
         </script>
     </body>
