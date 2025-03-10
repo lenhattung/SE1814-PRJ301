@@ -237,6 +237,7 @@
                         <thead>
                             <tr>
                                 <th>BookID</th>
+                                <th>Image</th>
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>PublishYear</th>
@@ -251,6 +252,7 @@
                             <c:forEach var="b" items="${requestScope.books}">
                                 <tr>
                                     <td>${b.bookID}</td>
+                                    <td><img src="${b.image}" width="150px"/></td>
                                     <td>${b.title}</td>
                                     <td>${b.author}</td>
                                     <td>${b.publishYear}</td>
@@ -259,6 +261,8 @@
                                     <% if (AuthUtils.isAdmin(session)) {%>  
                                     <td><a href="MainController?action=delete&id=${b.bookID}&searchTerm=${searchTerm}">
                                             <img src="assets/images/delete-icon.png" style="height: 25px"/>
+                                        </a>|<a href="MainController?action=edit&id=${b.bookID}&searchTerm=${searchTerm}">
+                                            Edit
                                         </a></td>
                                         <%}%>
                                 </tr>

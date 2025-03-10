@@ -23,7 +23,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
     public boolean create(BookDTO entity) {
         String sql = "INSERT INTO tblBooks"
                 + " (BookID,Title,Author,PublishYear,Price,Quantity) "
-                + "  VALUES(?, ?, ?, ? ,? , ?)";
+                + "  VALUES(?, ?, ?, ? ,? , ?, ?)";
         try {
             Connection conn = DBUtils.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -33,6 +33,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
             ps.setInt(4, entity.getPublishYear());
             ps.setDouble(5, entity.getPrice());
             ps.setInt(6, entity.getQuantity());
+            ps.setString(7, entity.getImage());
             int i = ps.executeUpdate();
             return i > 0;
         } catch (Exception e) {
@@ -53,6 +54,24 @@ public class BookDAO implements IDAO<BookDTO, String> {
 
     @Override
     public boolean update(BookDTO entity) {
+        String sql = "INSERT INTO tblBooks"
+                + " (BookID,Title,Author,PublishYear,Price,Quantity) "
+                + "  VALUES(?, ?, ?, ? ,? , ?, ?)";
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, entity.getTitle());
+            ps.setString(2, entity.getAuthor());
+            ps.setInt(3, entity.getPublishYear());
+            ps.setDouble(4, entity.getPrice());
+            ps.setInt(5, entity.getQuantity());
+            ps.setString(6, entity.getImage());
+            ps.setString(7, entity.getBookID());
+            int i = ps.executeUpdate();
+            return i > 0;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         return false;
     }
 
@@ -82,7 +101,8 @@ public class BookDAO implements IDAO<BookDTO, String> {
                         rs.getString("Author"),
                         rs.getInt("PublishYear"),
                         rs.getDouble("Price"),
-                        rs.getInt("Quantity")
+                        rs.getInt("Quantity"),
+                        rs.getString("image")
                 );
                 result.add(b);
             }
@@ -108,7 +128,8 @@ public class BookDAO implements IDAO<BookDTO, String> {
                         rs.getString("Author"),
                         rs.getInt("PublishYear"),
                         rs.getDouble("Price"),
-                        rs.getInt("Quantity")
+                        rs.getInt("Quantity"),
+                        rs.getString("image")
                 );
                 result.add(b);
             }
@@ -132,3 +153,9 @@ public class BookDAO implements IDAO<BookDTO, String> {
         return false;
     }
 }
+/*
+
+ALTER TABLE [dbo].tblBooks
+ADD [image] [text] NULL; 
+
+*/

@@ -86,6 +86,22 @@ public class MainController extends HttpServlet {
         }
         return url;
     }
+    
+     private String processEditBook(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        if (AuthUtils.isAdmin(request.getSession())) {
+            url = "search.jsp";
+            String str_bookid = request.getParameter("id");
+            BookDTO book = bookDAO.readbyID(str_bookid);
+            request.setAttribute("book", book);
+            url ="bookForm.jsp";
+            System.out.println("Chuyển trang bookForm.jsp");
+        } else {
+            response.getWriter().print("<h1>303 Error, ... </h1>");
+        }
+        return url;
+    }
 
     private String processAddBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -98,6 +114,7 @@ public class MainController extends HttpServlet {
                 int publishYear = Integer.parseInt(request.getParameter("txtPublishYear"));
                 double price = Double.parseDouble(request.getParameter("txtPrice"));
                 int quantity = Integer.parseInt(request.getParameter("txtQuantity"));
+                String image = request.getParameter("txtImage");
                 System.out.println(bookID);
                 boolean checkError = false;
                 if (bookID == null || bookID.trim().isEmpty()) {
@@ -114,10 +131,57 @@ public class MainController extends HttpServlet {
                     request.setAttribute("txtQuantity_error", "Quantity > 0.");
                     checkError = true;
                 }
-                BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity);
+                BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity, image);
 
                 if (!checkError) {
                     bookDAO.create(book);
+                    url = "search.jsp";
+                    processSearch(request, response);
+                } else {
+                    request.setAttribute("book", book);
+                    url = "bookForm.jsp";
+                }
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+        } else {
+            response.getWriter().print("<h1>303 Error, ... </h1>");
+        }
+        return url;
+    }
+    
+     private String processUpdateBook(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        if (AuthUtils.isAdmin(request.getSession())) {
+            try {
+                String bookID = request.getParameter("txtBookID");
+                String title = request.getParameter("txtTitle");
+                String author = request.getParameter("txtAuthor");
+                int publishYear = Integer.parseInt(request.getParameter("txtPublishYear"));
+                double price = Double.parseDouble(request.getParameter("txtPrice"));
+                int quantity = Integer.parseInt(request.getParameter("txtQuantity"));
+                String image = request.getParameter("txtImage");
+                System.out.println(bookID);
+                boolean checkError = false;
+                if (bookID == null || bookID.trim().isEmpty()) {
+                    request.setAttribute("txtBookID_error", "Book ID cannot be empty.");
+                    bookID = "";
+                    checkError = true;
+                }
+                if (title == null || title.trim().isEmpty()) {
+                    request.setAttribute("txtTitle_error", "Title cannot be empty.");
+                    title = "";
+                    checkError = true;
+                }
+                if (quantity <= 0) {
+                    request.setAttribute("txtQuantity_error", "Quantity > 0.");
+                    checkError = true;
+                }
+                BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity, image);
+
+                if (!checkError) {
+                    bookDAO.update(book);
                     url = "search.jsp";
                     processSearch(request, response);
                 } else {
@@ -153,6 +217,10 @@ public class MainController extends HttpServlet {
                 url = processDeleteBook(request, response);
             } else if (action != null && action.equals("add")) {
                 url = processAddBook(request, response);
+            } else if (action != null && action.equals("edit")) {
+                url = processEditBook(request, response);
+            } else if (action != null && action.equals("update")) {
+                url = processUpdateBook(request, response);
             }
         } catch (Exception e) {
             log("Error at MainController: " + e.toString());
