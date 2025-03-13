@@ -28,6 +28,8 @@ import util.AuthUtils;
 @WebServlet(name = "MainController", urlPatterns = {"/MainController"})
 public class MainController extends HttpServlet {
 
+    private static final int BOOKS_PER_PAGE = 4;
+
     private BookDAO bookDAO = new BookDAO();
 
     private static final String LOGIN_PAGE = "login.jsp";
@@ -85,8 +87,8 @@ public class MainController extends HttpServlet {
         }
         return url;
     }
-    
-     private String processEditBook(HttpServletRequest request, HttpServletResponse response)
+
+    private String processEditBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = LOGIN_PAGE;
         if (AuthUtils.isAdmin(request.getSession())) {
@@ -94,7 +96,7 @@ public class MainController extends HttpServlet {
             String str_bookid = request.getParameter("id");
             BookDTO book = bookDAO.readbyID(str_bookid);
             request.setAttribute("book", book);
-            url ="bookForm.jsp";
+            url = "bookForm.jsp";
             System.out.println("Chuyển trang bookForm.jsp");
         } else {
             response.getWriter().print("<h1>303 Error, ... </h1>");
@@ -148,8 +150,8 @@ public class MainController extends HttpServlet {
         }
         return url;
     }
-    
-     private String processUpdateBook(HttpServletRequest request, HttpServletResponse response)
+
+    private String processUpdateBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = LOGIN_PAGE;
         if (AuthUtils.isAdmin(request.getSession())) {
@@ -195,20 +197,120 @@ public class MainController extends HttpServlet {
         }
         return url;
     }
+    // Phương thức xử lý việc liệt kê sách có phân trang
+
+    private String processListBooks(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = "index.jsp";
+
+        try {
+            // Lấy tham số phân trang
+            int currentPage = 1;
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                currentPage = Integer.parseInt(pageParam);
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+            }
+
+            // Lấy tham số tìm kiếm (nếu có)
+            String searchTerm = request.getParameter("searchTerm");
+            if (searchTerm == null) {
+                searchTerm = "";
+            }
+
+            // Lấy toàn bộ danh sách sách hoặc tìm kiếm theo searchTerm
+            List<BookDTO> allBooks;
+            if (searchTerm.isEmpty()) {
+                allBooks = bookDAO.readAll();
+            } else {
+                allBooks = bookDAO.searchByTitle(searchTerm);
+            }
+
+            // Tính toán phân trang
+            int totalBooks = allBooks.size();
+            int totalPages = (int) Math.ceil((double) totalBooks / BOOKS_PER_PAGE);
+
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            }
+
+            // Lấy danh sách sách cho trang hiện tại
+            int startIndex = (currentPage - 1) * BOOKS_PER_PAGE;
+            int endIndex = Math.min(startIndex + BOOKS_PER_PAGE, totalBooks);
+
+            List<BookDTO> booksForPage;
+            if (startIndex < totalBooks) {
+                booksForPage = allBooks.subList(startIndex, endIndex);
+            } else {
+                booksForPage = new ArrayList<>();
+            }
+
+            // Đặt các thuộc tính vào request
+            request.setAttribute("bookList", booksForPage);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalBooks", totalBooks);
+
+            // Nếu không có sách, hiển thị thông báo
+            if (booksForPage.isEmpty()) {
+                if (!searchTerm.isEmpty()) {
+                    request.setAttribute("message", "No books found matching '" + searchTerm + "'");
+                } else if (totalBooks == 0) {
+                    request.setAttribute("message", "There are no books in the catalog.");
+                }
+                request.setAttribute("messageType", "info");
+            }
+
+        } catch (Exception e) {
+            request.setAttribute("message", "Error loading book catalog: " + e.getMessage());
+            request.setAttribute("messageType", "error");
+            System.out.println("Error in processListBooks: " + e.toString());
+        }
+
+        return url;
+    }
+
+// Phương thức xử lý xem chi tiết sách
+    private String processViewDetail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = "detail.jsp";
+
+        try {
+            String bookId = request.getParameter("id");
+            if (bookId != null && !bookId.isEmpty()) {
+                BookDTO book = bookDAO.readbyID(bookId);
+                if (book != null) {
+                    request.setAttribute("book", book);
+                } else {
+                    request.setAttribute("message", "Book not found.");
+                    request.setAttribute("messageType", "error");
+                }
+            } else {
+                request.setAttribute("message", "Invalid book ID.");
+                request.setAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            request.setAttribute("message", "Error loading book details: " + e.getMessage());
+            request.setAttribute("messageType", "error");
+            System.out.println("Error in processViewDetail: " + e.toString());
+        }
+
+        return url;
+    }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        
+
         response.setContentType("text/html;charset=UTF-8");
         String url = LOGIN_PAGE;
         try {
             String action = request.getParameter("action");
             System.out.println(action);
-            if (action == null) {
-                url = LOGIN_PAGE;
-            }
+            
             if (action != null && action.equals("login")) {
                 url = processLogin(request, response);
             } else if (action != null && action.equals("logout")) {
@@ -223,6 +325,14 @@ public class MainController extends HttpServlet {
                 url = processEditBook(request, response);
             } else if (action != null && action.equals("update")) {
                 url = processUpdateBook(request, response);
+            } else if (action != null && action.equals("listBooks")) {
+                url = processListBooks(request, response);
+            } else if (action != null && action.equals("viewDetail")) {
+                url = processViewDetail(request, response);
+            }
+            if (action == null) {
+                // Nếu không có action, chuyển hướng đến danh sách sách
+                url = processListBooks(request, response);
             }
         } catch (Exception e) {
             log("Error at MainController: " + e.toString());

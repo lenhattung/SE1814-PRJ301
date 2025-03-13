@@ -459,7 +459,7 @@
                     $('#progressBar').css('width', '0%');
                 });
                 
-                // Để chọn lại file đã tải lên trước đó (nếu có)
+                  // Để chọn lại file đã tải lên trước đó (nếu có)
                 const existingImageSrc = $('#imagePreview img').attr('src');
                 if (existingImageSrc) {
                     $('#txtImage').val(existingImageSrc);
