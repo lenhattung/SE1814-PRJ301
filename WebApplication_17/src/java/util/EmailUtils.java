@@ -11,9 +11,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
- * Lớp tiện ích hỗ trợ gửi email
- * 
- * @author tungi
+Thư viện: https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+Tao mật khẩu ứng dụng: https://myaccount.google.com/apppasswords
  */
 public class EmailUtils {
     
