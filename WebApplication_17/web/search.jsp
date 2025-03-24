@@ -9,7 +9,7 @@
 <%@page import="java.awt.print.Book"%>
 <%@page import="java.util.List"%>
 <%@page import="dto.UserDTO"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -271,7 +271,7 @@
                     </table>
                 </c:if>
             </c:if>
-                <c:if test="${empty requestScope}">
+                <c:if test="${empty requestScope.user}">
                 <div class="welcome-section">
                     <h1>Access Denied</h1>
                     <p>You do not have permission to access this content.</p>

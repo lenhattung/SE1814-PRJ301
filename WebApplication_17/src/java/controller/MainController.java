@@ -55,6 +55,7 @@ public class MainController extends HttpServlet {
 
     private String processLogout(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         String url = LOGIN_PAGE;
         url = "login.jsp";
         request.getSession().invalidate(); // Hủy phiên làm việc
