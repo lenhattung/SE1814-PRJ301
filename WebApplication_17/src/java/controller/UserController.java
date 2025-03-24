@@ -39,6 +39,7 @@ public class UserController extends HttpServlet {
 
         String action = request.getParameter("action");
         String url = "error.jsp";
+        
 
         try {
             if ("register".equals(action)) {
