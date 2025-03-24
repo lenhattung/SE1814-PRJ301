@@ -44,7 +44,6 @@ public class MainController extends HttpServlet {
             url = "search.jsp";
             UserDTO user = AuthUtils.getUser(strUserID);
             request.getSession().setAttribute("user", user);
-
             // search
             processSearch(request, response);
         } else {
@@ -371,6 +370,8 @@ public class MainController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        
+        request.getSession().getServletContext();
     }
 
     /**

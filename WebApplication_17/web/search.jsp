@@ -271,7 +271,7 @@
                     </table>
                 </c:if>
             </c:if>
-            <c:if test="${empty sessionScope.user}">
+                <c:if test="${empty requestScope}">
                 <div class="welcome-section">
                     <h1>Access Denied</h1>
                     <p>You do not have permission to access this content.</p>

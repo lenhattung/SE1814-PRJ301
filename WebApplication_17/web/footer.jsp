@@ -106,3 +106,9 @@
         <p>&copy; 2024 Shop Online. Tất cả quyền được bảo lưu.</p>
     </div>
 </footer>
+
+<%
+//    request;
+//    session;
+    
+%>
