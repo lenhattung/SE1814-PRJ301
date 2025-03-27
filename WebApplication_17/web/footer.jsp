@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <style>
     .footer {
         background-color: #2c3e50;
@@ -106,9 +106,3 @@
         <p>&copy; 2024 Shop Online. Tất cả quyền được bảo lưu.</p>
     </div>
 </footer>
-
-<%
-//    request;
-//    session;
-    
-%>

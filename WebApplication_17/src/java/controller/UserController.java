@@ -35,6 +35,9 @@ public class UserController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.getSession().getServletContext();
+        
+        
         response.setContentType("text/html;charset=UTF-8");
 
         String action = request.getParameter("action");
